@@ -9,8 +9,8 @@ AM_FCFLAGS = ${FCFLAGS}
 AM_LDFLAGS = ${LDFLAGS}
 
 all:
-if WITH_UMPKFCVM_LARGEDATA_DIR
-	echo "USING WITH_UMPKFCVM_LARGEDATA_DIR in uwpkfcvm"
+if WITH_UWPKFCVM_LARGEDATA_DIR
+	echo "USING WITH_UWPKFCVM_LARGEDATA_DIR in uwpkfcvm"
 else
 	if [ ! -d "./uwpkfcvm" ]; then \
 		./make_data_files.py; \
@@ -19,11 +19,11 @@ endif
 
 
 install:
-if WITH_UMPKFCVM_LARGEDATA_DIR
+if WITH_UWPKFCVM_LARGEDATA_DIR
 	if [ ! -d "${prefix}/data/uwpkfcvm" ]; then \
 		$(MKDIR_P) ${prefix}/data; \
-		$(LN_S) -f $(UMPKFCVM_LARGEDATA_DIR) ${prefix}/data/uwpkfcvm; \
-		echo "USING WITH_UMPKFCVM_LARGEDATA_DIR in uwpkfcvm"; \
+		$(LN_S) -f $(UWPKFCVM_LARGEDATA_DIR) ${prefix}/data/uwpkfcvm; \
+		echo "USING WITH_UWPKFCVM_LARGEDATA_DIR in uwpkfcvm"; \
 	fi
 	cp config ${prefix}/data
 else
