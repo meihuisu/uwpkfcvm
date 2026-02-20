@@ -1,0 +1,29 @@
+# UTM Zone
+utm_zone = 10
+
+# Model directory
+model_dir = uwpkfcvm
+model_data_path  = https://g-c662a6.a78b8.36fe.data.globus.org/ucvm/models
+
+# Number of cells in x, y, and z.
+nx = 33
+ny = 20
+nz = 15
+
+# Depth, in meters
+# NOTE: 0 km is ~ sea level and 28 km depth is 28 km below sea level.
+depth = 28000
+depth_interval = 2000
+
+# Corners, in LATLON
+bottom_left_corner_lon = -120.57782
+bottom_left_corner_lat = 35.13359
+bottom_right_corner_lon = -119.49177
+bottom_right_corner_lat = 35.87510
+top_left_corner_lon = -121.39028
+top_left_corner_lat = 35.92063
+top_right_corner_lon = -120.30264
+top_right_corner_lat = 36.66214
+
+## bilinear or trilinear interpolation
+interpolation = off

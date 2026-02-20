@@ -1,0 +1,33 @@
+
+Original file,
+where Z is depth below sea level. The model is uniformly gridded in X (4 km),
+Y (6 km), and Z (2 km)
+
+Lat      Lon        X     Y       Z   vp
+
+35.13359 -120.57782 -64.0 -66.0   0.0 2.60
+35.15676 -120.54403 -60.0 -66.0   0.0 2.64
+...
+
+looking at the border,  this data has a 'rotation' to it,
+
+bottom-left, bottom-right, top-left, top-right
+
+-120.57782 35.13359 0
+-119.49177 35.87510 0
+-121.39028 35.92063 0
+-120.30264 36.66214 0
+
+origin is at bottom-left
+
+and walking..
+-120.57782 35.13359 
+-120.54403 35.15676           
+-120.51023 35.17993
+-120.47642 35.20310
+-120.27338 35.34213 
+
+toward x-major first toward bottom-right
+and top to bottom in z
+
+earlier info from Cliff, Origin and Rotate Angle(anticlockwise): 35.960 -120.505 -40.00 ??
