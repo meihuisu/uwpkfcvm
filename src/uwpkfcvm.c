@@ -364,7 +364,7 @@ if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-y, bottom-up)\n", locatio
                 location = ((long)((uwpkfcvm_configuration->nz -1) - z) * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (x * uwpkfcvm_configuration->ny) + y;
 if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-y, top-down)\n", location); }
         }
-    } else {  // fast-X, cca data
+    } else {  // fast-X,  data
         if ( strcmp(uwpkfcvm_configuration->seek_axis, "fast-x") == 0 ||
                      strcmp(uwpkfcvm_configuration->seek_axis, "fast-X") == 0 ) { // fast-x,  uwpkfcvm 
             if(strcmp(uwpkfcvm_configuration->seek_direction, "bottom-up") == 0) { 
@@ -391,9 +391,20 @@ if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-x, top-down)\n", location
 if(uwpkfcvm_debug) {fprintf(stderr,"     FOUND : vp %f\n", temp); }
         data->vp=temp;
     }
+    if (uwpkfcvm_velocity_model->vs_status == 2) {
+        // Read from memory.
+        ptr = (float *)uwpkfcvm_velocity_model->vs;
+        data->vs = ptr[location];
+    } else if (uwpkfcvm_velocity_model->vs_status == 1) {
+        // Read from file.
+        fp = (FILE *)uwpkfcvm_velocity_model->vs;
+        fseek(fp, location * sizeof(float), SEEK_SET);
+        float temp;
+        fread(&(temp), sizeof(float), 1, fp);
+if(uwpkfcvm_debug) {fprintf(stderr,"     FOUND : vs %f\n", temp); }
+        data->vs=temp;
+    }
 
-    /* Calculate vs */
-    if (data->vp > 0.0) { data->vs=uwpkfcvm_calculate_vs(data->vp); }
     /* Calculate density */
     if (data->vp > 0.0) { data->rho=uwpkfcvm_calculate_density(data->vp); }
 }
@@ -641,6 +652,28 @@ int uwpkfcvm_try_reading_model(uwpkfcvm_model_t *model) {
         } else {
             model->vp = fopen(current_file, "rb");
             model->vp_status = 1;
+                }
+        file_count++;
+    }
+
+    sprintf(current_file, "%s/vs.dat", uwpkfcvm_data_directory);
+    if (access(current_file, R_OK) == 0) {
+                if( !too_big() ) { // only if fit
+            model->vs = malloc(base_malloc);
+            if (model->vs != NULL) {
+            // Read the model in.
+            fp = fopen(current_file, "rb");
+            fread(model->vp, 1, base_malloc, fp);
+                        all_read_to_memory++;
+            fclose(fp);
+            model->vs_status = 2;
+            } else {
+              model->vs = fopen(current_file, "rb");
+              model->vs_status = 1;
+            }
+        } else {
+            model->vs = fopen(current_file, "rb");
+            model->vs_status = 1;
                 }
         file_count++;
     }
