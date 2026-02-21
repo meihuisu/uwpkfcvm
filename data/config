@@ -25,5 +25,24 @@ top_left_corner_lat = 35.92063
 top_right_corner_lon = -120.30264
 top_right_corner_lat = 36.66214
 
+#data_in
+#0 -120.57782 35.13359
+#0 -119.49177 35.87510
+#0 -121.39028 35.92063
+#0 -120.30264 36.66214
+#>> latlon2utm 10 < data_in
+#lon(-120.577820)lat(35.133590) => utm_e(720787.201176),utm_n(3890350.364648)
+#lon(-119.491770)lat(35.875100) => utm_e(816842.162927),utm_n(3975589.689809)
+#lon(-121.390280)lat(35.920630) => utm_e(645328.879671),utm_n(3976147.143286)
+#lon(-120.302640)lat(36.662140) => utm_e(741178.557667),utm_n(4060589.124904)
+bottom_left_corner_e = 720787.20117
+bottom_left_corner_n = 3890350.364648
+bottom_right_corner_e = 816842.162927
+bottom_right_corner_n = 3975589.689809
+top_left_corner_e = 645328.879671
+top_left_corner_n = 3976147.143286
+top_right_corner_e = 741178.557667
+top_right_corner_n = 4060589.124904
+
 ## bilinear or trilinear interpolation
 interpolation = off

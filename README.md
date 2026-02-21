@@ -7,7 +7,7 @@
 [![uwpkfcvm-ucvm-ci Actions Status](https://github.com/SCECcode/uwpkfcvm/workflows/uwpkfcvm-ucvm-ci/badge.svg)](https://github.com/SCECcode/uwpkfcvm/actions)
 
 
- The UWPKFCVM velocity model describes 3D seismic P- and S-wave velocities from a tomographic 
+ The UW Parkfield velocity model describes 3D seismic P- and S-wave velocities from a tomographic 
 inversion for crustal structure in the greater Parkfield region (Zeng et al., 2016). The 
 inversion used the code tomoDD by Zhang and Thurber (BSSA, 2003), which inverts body-wave 
 arrival times for 3D P- and S-wave velocity structure simultaneously with determining 
