@@ -481,6 +481,13 @@ void uwpkfcvm_linear_interpolation(double percent, uwpkfcvm_properties_t *x0, uw
 }
 
 /**
+ */
+void uwpkfcvm_setdebug() {
+   uwpkfcvm_ucvm_debug=1;
+}
+
+
+/**
  * Called when the model is being discarded. Free all variables.
  *
  * @return SUCCESS

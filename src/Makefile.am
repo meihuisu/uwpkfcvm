@@ -5,7 +5,7 @@ AM_CFLAGS = ${CFLAGS} ${PROJ_INCLUDES}
 AM_LDFLAGS = ${LDFLAGS} ${PROJ_LDFLAGS}
 
 
-TARGETS = libuwpkfcvm.a libuwpkfcvm.so
+TARGETS = libuwpkfcvm.a libuwpkfcvm.so uwpkfcvm_query
 
 all: $(TARGETS)
 
@@ -16,6 +16,7 @@ install:
 	cp libuwpkfcvm.so ${prefix}/lib
 	cp libuwpkfcvm.a ${prefix}/lib
 	cp uwpkfcvm.h ${prefix}/include
+	cp uwpkfcvm_query ${prefix}/bin
 
 libuwpkfcvm.a: uwpkfcvm_static.o 
 	$(AR) rcs $@ $^
@@ -28,6 +29,12 @@ uwpkfcvm.o: uwpkfcvm.c
 	
 uwpkfcvm_static.o: uwpkfcvm.c
 	$(CC) -o $@ -c $^ $(AM_CFLAGS)
+
+uwpkfcvm_query.o: uwpkfcvm_query.c
+	$(CC) $(AM_CFLAGS) -o $@ -c $^
+
+uwpkfcvm_query : uwpkfcvm_query.o libuwpkfcvm.a
+	$(CC) -o $@ $^ $(AM_LDFLAGS)
 	
 clean:
 	rm -rf $(TARGETS)
