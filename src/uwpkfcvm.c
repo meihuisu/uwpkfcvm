@@ -15,7 +15,8 @@
 #include "uwpkfcvm.h"
 #include <assert.h>
 
-int uwpkfcvm_debug=0;
+int uwpkfcvm_ucvm_debug=1;
+FILE *stderrfp=NULL;
 
 /** The config of the model */
 char *uwpkfcvm_config_string=NULL;
@@ -61,6 +62,14 @@ int uwpkfcvm_init(const char *dir, const char *label) {
     int tempVal = 0;
     char configbuf[512];
     double north_height_m = 0, east_width_m = 0, rotation_angle = 0;
+fprintf(stderr,"XXX\n");
+
+    if(uwpkfcvm_ucvm_debug) {
+fprintf(stderr,"XXX\n");
+      stderrfp = fopen("uwpkfcvm_debug.log", "w+");
+      fprintf(stderrfp," ===== START ===== \n");
+    }
+
 
     // Initialize variables.
     uwpkfcvm_configuration = calloc(1, sizeof(uwpkfcvm_configuration_t));
@@ -121,10 +130,10 @@ int uwpkfcvm_init(const char *dir, const char *label) {
     uwpkfcvm_total_width_m  = sqrt(pow(uwpkfcvm_configuration->top_right_corner_n - uwpkfcvm_configuration->top_left_corner_n, 2.0f) +
           pow(uwpkfcvm_configuration->top_right_corner_e - uwpkfcvm_configuration->top_left_corner_e, 2.0f));
 
-    if(uwpkfcvm_debug) {
-      fprintf(stderr,"north_height %lf east_width %lf\n", north_height_m, east_width_m);
-      fprintf(stderr,"totol height %lf total width %lf\n", uwpkfcvm_total_height_m, uwpkfcvm_total_width_m);
-      fprintf(stderr,"cos angle %lf sin angle %lf\n", uwpkfcvm_cos_rotation_angle, uwpkfcvm_sin_rotation_angle);
+    if(uwpkfcvm_ucvm_debug) {
+      fprintf(stderrfp,"north_height %lf east_width %lf\n", north_height_m, east_width_m);
+      fprintf(stderrfp,"totol height %lf total width %lf\n", uwpkfcvm_total_height_m, uwpkfcvm_total_width_m);
+      fprintf(stderrfp,"cos angle %lf sin angle %lf\n", uwpkfcvm_cos_rotation_angle, uwpkfcvm_sin_rotation_angle);
     }
 
     // setup config_string 
@@ -207,21 +216,21 @@ int uwpkfcvm_query(uwpkfcvm_point_t *points, uwpkfcvm_properties_t *data, int nu
 	// lon,lat,u,v			     
 	to_utm(points[i].longitude, points[i].latitude, &point_u, &point_v);
 
-if(uwpkfcvm_debug) { fprintf(stderr,"   left_e %lf left_n %lf\n", 
+if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   left_e %lf left_n %lf\n", 
                       uwpkfcvm_configuration->bottom_left_corner_e, uwpkfcvm_configuration->bottom_left_corner_n); }
 
-if(uwpkfcvm_debug) { fprintf(stderr,"   lon %lf lat %lf\n", points[i].longitude, points[i].latitude); }
-if(uwpkfcvm_debug) { fprintf(stderr,"   point_u %lf point_v %lf\n", point_u, point_v); }
+if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   lon %lf lat %lf\n", points[i].longitude, points[i].latitude); }
+if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   point_u %lf point_v %lf\n", point_u, point_v); }
 
         // Point within rectangle.
         point_u -= uwpkfcvm_configuration->bottom_left_corner_e;
         point_v -= uwpkfcvm_configuration->bottom_left_corner_n;
-if(uwpkfcvm_debug) { fprintf(stderr,"2  point_u %lf point_v %lf\n", point_u, point_v); }
+if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"2  point_u %lf point_v %lf\n", point_u, point_v); }
 
         // We need to rotate that point, the number of degrees we calculated above.
         point_x = uwpkfcvm_cos_rotation_angle * point_u - uwpkfcvm_sin_rotation_angle * point_v;
         point_y = uwpkfcvm_sin_rotation_angle * point_u + uwpkfcvm_cos_rotation_angle * point_v;
-if(uwpkfcvm_debug) { fprintf(stderr,"   point_x %lf point_y  %lf\n", point_x, point_y); }
+if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   point_x %lf point_y  %lf\n", point_x, point_y); }
 
         // Which point base point does that correspond to?
         load_x_coord = floor(point_x / uwpkfcvm_total_width_m * (uwpkfcvm_configuration->nx - 1));
@@ -232,7 +241,7 @@ if(uwpkfcvm_debug) { fprintf(stderr,"   point_x %lf point_y  %lf\n", point_x, po
         load_z_coord = (uwpkfcvm_configuration->depth / uwpkfcvm_configuration->depth_interval) -
                        floor(points[i].depth / uwpkfcvm_configuration->depth_interval);
 
-if(uwpkfcvm_debug) { fprintf(stderr,"   load_x_coord %d load_y_coord %d load_z_coord %d\n", load_x_coord,load_y_coord,load_z_coord); }
+if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   load_x_coord %d load_y_coord %d load_z_coord %d\n", load_x_coord,load_y_coord,load_z_coord); }
 
         // Are we outside the model's X and Y boundaries?
 	// and also outside of z
@@ -269,7 +278,7 @@ if(uwpkfcvm_debug) { fprintf(stderr,"   load_x_coord %d load_y_coord %d load_z_c
   
           uwpkfcvm_trilinear_interpolation(x_percent, y_percent, z_percent, surrounding_points, &(data[i]));
           } else {
-if(uwpkfcvm_debug) {fprintf(stderr,"direct call, no interpolation\n"); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"direct call, no interpolation\n"); }
               uwpkfcvm_read_properties(load_x_coord, load_y_coord, load_z_coord, &(data[i]));    // Orgin.
         }
 
@@ -347,8 +356,8 @@ void uwpkfcvm_read_properties(int x, int y, int z, uwpkfcvm_properties_t *data) 
     data->qp = -1;
     data->qs = -1;
 
-if(uwpkfcvm_debug) {fprintf(stderr,"read_properties index: x(%d) y(%d) z(%d)\n",x,y,z); }
-if(uwpkfcvm_debug) {fprintf(stderr,"     nx(%d) ny(%d) nz(%d)\n",
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"read_properties index: x(%d) y(%d) z(%d)\n",x,y,z); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     nx(%d) ny(%d) nz(%d)\n",
 	          uwpkfcvm_configuration->nx,uwpkfcvm_configuration->ny,uwpkfcvm_configuration->nz); }
     float *ptr = NULL;
     FILE *fp = NULL;
@@ -359,20 +368,20 @@ if(uwpkfcvm_debug) {fprintf(stderr,"     nx(%d) ny(%d) nz(%d)\n",
                  strcmp(uwpkfcvm_configuration->seek_axis, "fast-Y") == 0 ) { // fast-y,  uwpkfcvm 
         if(strcmp(uwpkfcvm_configuration->seek_direction, "bottom-up") == 0) { 
             location = ((long) z * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (x * uwpkfcvm_configuration->ny) + y;
-if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-y, bottom-up)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-y, bottom-up)\n", location); }
             } else { // nz starts from 0 up to nz-1
                 location = ((long)((uwpkfcvm_configuration->nz -1) - z) * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (x * uwpkfcvm_configuration->ny) + y;
-if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-y, top-down)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-y, top-down)\n", location); }
         }
     } else {  // fast-X,  data
         if ( strcmp(uwpkfcvm_configuration->seek_axis, "fast-x") == 0 ||
                      strcmp(uwpkfcvm_configuration->seek_axis, "fast-X") == 0 ) { // fast-x,  uwpkfcvm 
             if(strcmp(uwpkfcvm_configuration->seek_direction, "bottom-up") == 0) { 
                location = ((long)z * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (y * uwpkfcvm_configuration->nx) + x;
-if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-x, bottom-up)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-x, bottom-up)\n", location); }
                 } else { // bottom-up
                     location = ((long)((uwpkfcvm_configuration->nz -1)- z) * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (y * uwpkfcvm_configuration->nx) + x;
-if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-x, top-down)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-x, top-down)\n", location); }
             }
         }
     }
@@ -388,7 +397,7 @@ if(uwpkfcvm_debug) {fprintf(stderr,"LOCATION==%ld(fast-x, top-down)\n", location
         fseek(fp, location * sizeof(float), SEEK_SET);
         float temp;
         fread(&(temp), sizeof(float), 1, fp);
-if(uwpkfcvm_debug) {fprintf(stderr,"     FOUND : vp %f\n", temp); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     FOUND : vp %f\n", temp); }
         data->vp=temp;
     }
     if (uwpkfcvm_velocity_model->vs_status == 2) {
@@ -401,7 +410,7 @@ if(uwpkfcvm_debug) {fprintf(stderr,"     FOUND : vp %f\n", temp); }
         fseek(fp, location * sizeof(float), SEEK_SET);
         float temp;
         fread(&(temp), sizeof(float), 1, fp);
-if(uwpkfcvm_debug) {fprintf(stderr,"     FOUND : vs %f\n", temp); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     FOUND : vs %f\n", temp); }
         data->vs=temp;
     }
 
@@ -485,6 +494,12 @@ int uwpkfcvm_finalize() {
     if (uwpkfcvm_configuration) free(uwpkfcvm_configuration);
 
     return SUCCESS;
+
+    if(uwpkfcvm_ucvm_debug) {
+      fprintf(stderrfp,"DONE:\n");
+      fclose(stderrfp);
+    }
+
 }
 
 /**

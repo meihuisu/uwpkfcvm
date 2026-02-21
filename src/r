@@ -1,0 +1,3 @@
+
+ucvm_query -m uwpkfcvm -f $UCVM_INSTALL_PATH/conf/ucvm.conf < in
+

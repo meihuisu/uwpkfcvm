@@ -46,3 +46,9 @@ top_right_corner_n = 4060589.124904
 
 ## bilinear or trilinear interpolation
 interpolation = off
+
+# Seek method, fast-X or fast-Y
+seek_axis = fast-X
+seek_direction = top-down
+
+
