@@ -134,8 +134,6 @@ int model_version(char *ver, int len);
 int model_query(uwpkfcvm_point_t *points, uwpkfcvm_properties_t *data, int numpts);
 int model_config(char **config, int *sz);
 
-void uwpkfcvm_setdebug();
-
 int (*get_model_init())(const char *, const char *);
 int (*get_model_query())(uwpkfcvm_point_t *, uwpkfcvm_properties_t *, int);
 int (*get_model_finalize())();
@@ -154,6 +152,8 @@ int uwpkfcvm_finalize();
 int uwpkfcvm_version(char *ver, int len);
 /** Queries the model */
 int uwpkfcvm_query(uwpkfcvm_point_t *points, uwpkfcvm_properties_t *data, int numpts);
+
+void uwpkfcvm_setdebug();
 
 // Non-UCVM Helper Functions
 /** Reads the configuration file. */

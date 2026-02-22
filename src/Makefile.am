@@ -34,7 +34,7 @@ uwpkfcvm_query.o: uwpkfcvm_query.c
 	$(CC) $(AM_CFLAGS) -o $@ -c $^
 
 uwpkfcvm_query : uwpkfcvm_query.o libuwpkfcvm.a
-	$(CC) -o $@ $^ $(AM_LDFLAGS)
+	$(CC) -o $@ $^ $(AM_LDFLAGS) -lm
 	
 clean:
 	rm -rf $(TARGETS)
