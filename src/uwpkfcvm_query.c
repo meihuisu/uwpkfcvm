@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 #include "ucvm_model_dtypes.h"
 #include "uwpkfcvm.h"
 
