@@ -62,10 +62,8 @@ int uwpkfcvm_init(const char *dir, const char *label) {
     int tempVal = 0;
     char configbuf[512];
     double north_height_m = 0, east_width_m = 0, rotation_angle = 0;
-fprintf(stderr,"XXX\n");
 
     if(uwpkfcvm_ucvm_debug) {
-fprintf(stderr,"XXX\n");
       stderrfp = fopen("uwpkfcvm_debug.log", "w+");
       fprintf(stderrfp," ===== START ===== \n");
     }
