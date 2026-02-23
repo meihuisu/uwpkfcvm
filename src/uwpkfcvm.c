@@ -15,7 +15,7 @@
 #include "uwpkfcvm.h"
 #include <assert.h>
 
-int uwpkfcvm_ucvm_debug=1;
+int uwpkfcvm_ucvm_debug=0;
 FILE *stderrfp=NULL;
 
 /** The config of the model */
@@ -235,7 +235,8 @@ if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   point_x %lf point_y  %lf\n", poin
 
         load_y_coord = floor(point_y / uwpkfcvm_total_height_m * (uwpkfcvm_configuration->ny - 1));
 
-        // And on the Z-axis?
+        // And on the Z-axis? XXX
+	
         load_z_coord = (uwpkfcvm_configuration->depth / uwpkfcvm_configuration->depth_interval) -
                        floor(points[i].depth / uwpkfcvm_configuration->depth_interval);
 
@@ -354,8 +355,8 @@ void uwpkfcvm_read_properties(int x, int y, int z, uwpkfcvm_properties_t *data) 
     data->qp = -1;
     data->qs = -1;
 
-if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"read_properties index: x(%d) y(%d) z(%d)\n",x,y,z); }
-if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     nx(%d) ny(%d) nz(%d)\n",
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"read_properties index: x(%d) y(%d) z(%d)",x,y,z); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"  : out of nx(%d) ny(%d) nz(%d)\n",
 	          uwpkfcvm_configuration->nx,uwpkfcvm_configuration->ny,uwpkfcvm_configuration->nz); }
     float *ptr = NULL;
     FILE *fp = NULL;
@@ -366,20 +367,20 @@ if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     nx(%d) ny(%d) nz(%d)\n",
                  strcmp(uwpkfcvm_configuration->seek_axis, "fast-Y") == 0 ) { // fast-y,  uwpkfcvm 
         if(strcmp(uwpkfcvm_configuration->seek_direction, "bottom-up") == 0) { 
             location = ((long) z * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (x * uwpkfcvm_configuration->ny) + y;
-if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-y, bottom-up)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp," >>> LOCATION==%ld(fast-y, bottom-up)\n", location); }
             } else { // nz starts from 0 up to nz-1
                 location = ((long)((uwpkfcvm_configuration->nz -1) - z) * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (x * uwpkfcvm_configuration->ny) + y;
-if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-y, top-down)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp," >>> LOCATION==%ld(fast-y, top-down)\n", location); }
         }
     } else {  // fast-X,  data
         if ( strcmp(uwpkfcvm_configuration->seek_axis, "fast-x") == 0 ||
                      strcmp(uwpkfcvm_configuration->seek_axis, "fast-X") == 0 ) { // fast-x,  uwpkfcvm 
             if(strcmp(uwpkfcvm_configuration->seek_direction, "bottom-up") == 0) { 
                location = ((long)z * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (y * uwpkfcvm_configuration->nx) + x;
-if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-x, bottom-up)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp," >>> LOCATION==%ld(fast-x, bottom-up)\n", location); }
                 } else { // bottom-up
                     location = ((long)((uwpkfcvm_configuration->nz -1)- z) * uwpkfcvm_configuration->nx * uwpkfcvm_configuration->ny) + (y * uwpkfcvm_configuration->nx) + x;
-if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-x, top-down)\n", location); }
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp," >>> LOCATION==%ld(fast-x, top-down)\n", location); }
             }
         }
     }
@@ -389,6 +390,7 @@ if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"LOCATION==%ld(fast-x, top-down)\n", l
         // Read from memory.
         ptr = (float *)uwpkfcvm_velocity_model->vp;
         data->vp = ptr[location];
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     FOUND : vp %f\n", data->vp); }
     } else if (uwpkfcvm_velocity_model->vp_status == 1) {
         // Read from file.
         fp = (FILE *)uwpkfcvm_velocity_model->vp;
@@ -402,6 +404,9 @@ if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     FOUND : vp %f\n", temp); }
         // Read from memory.
         ptr = (float *)uwpkfcvm_velocity_model->vs;
         data->vs = ptr[location];
+
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"     FOUND : vs %f\n", data->vs); }
+
     } else if (uwpkfcvm_velocity_model->vs_status == 1) {
         // Read from file.
         fp = (FILE *)uwpkfcvm_velocity_model->vs;
@@ -656,8 +661,8 @@ int uwpkfcvm_try_reading_model(uwpkfcvm_model_t *model) {
     // Let's see what data we actually have.
     sprintf(current_file, "%s/vp.dat", uwpkfcvm_data_directory);
     if (access(current_file, R_OK) == 0) {
-                if( !too_big() ) { // only if fit
-            model->vp = malloc(base_malloc);
+        if( !too_big() ) { // only if fit
+            model->vp = (float *)malloc(base_malloc);
             if (model->vp != NULL) {
             // Read the model in.
             fp = fopen(current_file, "rb");
@@ -672,18 +677,18 @@ int uwpkfcvm_try_reading_model(uwpkfcvm_model_t *model) {
         } else {
             model->vp = fopen(current_file, "rb");
             model->vp_status = 1;
-                }
+        }
         file_count++;
     }
 
     sprintf(current_file, "%s/vs.dat", uwpkfcvm_data_directory);
     if (access(current_file, R_OK) == 0) {
                 if( !too_big() ) { // only if fit
-            model->vs = malloc(base_malloc);
-            if (model->vs != NULL) {
+            model->vs = (float *) malloc(base_malloc);
+        if (model->vs != NULL) {
             // Read the model in.
             fp = fopen(current_file, "rb");
-            fread(model->vp, 1, base_malloc, fp);
+            fread(model->vs, 1, base_malloc, fp);
                         all_read_to_memory++;
             fclose(fp);
             model->vs_status = 2;
