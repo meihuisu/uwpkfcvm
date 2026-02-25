@@ -231,20 +231,20 @@ if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"2  point_u %lf point_v %lf\n", point
 if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   point_x %lf point_y  %lf\n", point_x, point_y); }
 
         // Which point base point does that correspond to?
-        load_x_coord = floor(point_x / uwpkfcvm_total_width_m * (uwpkfcvm_configuration->nx - 1));
+        load_x_coord = round(point_x / uwpkfcvm_total_width_m * (uwpkfcvm_configuration->nx - 1));
 
-        load_y_coord = floor(point_y / uwpkfcvm_total_height_m * (uwpkfcvm_configuration->ny - 1));
+        load_y_coord = round(point_y / uwpkfcvm_total_height_m * (uwpkfcvm_configuration->ny - 1));
 
         // And on the Z-axis? XXX
 	
         load_z_coord = (uwpkfcvm_configuration->depth / uwpkfcvm_configuration->depth_interval) -
-                       floor(points[i].depth / uwpkfcvm_configuration->depth_interval);
+                       round(points[i].depth / uwpkfcvm_configuration->depth_interval);
 
 if(uwpkfcvm_ucvm_debug) { fprintf(stderrfp,"   load_x_coord %d load_y_coord %d load_z_coord %d\n", load_x_coord,load_y_coord,load_z_coord); }
 
         // Are we outside the model's X and Y boundaries?
 	// and also outside of z
-        if (load_x_coord > uwpkfcvm_configuration->nx - 2 || load_y_coord > uwpkfcvm_configuration->ny - 2 || load_x_coord < 0 || load_y_coord < 0 || load_z_coord < 1) {
+        if (load_x_coord > uwpkfcvm_configuration->nx - 1 || load_y_coord > uwpkfcvm_configuration->ny - 1 || load_x_coord < 0 || load_y_coord < 0 | load_z_coord < 0) {
             data[i].vp = -1;
             data[i].vs = -1;
             data[i].rho = -1;
@@ -356,11 +356,12 @@ void uwpkfcvm_read_properties(int x, int y, int z, uwpkfcvm_properties_t *data) 
     data->qs = -1;
 
 if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"read_properties index: x(%d) y(%d) z(%d)",x,y,z); }
-if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp,"  : out of nx(%d) ny(%d) nz(%d)\n",
+if(uwpkfcvm_ucvm_debug) {fprintf(stderrfp," from (%d:%d:%d)\n",
 	          uwpkfcvm_configuration->nx,uwpkfcvm_configuration->ny,uwpkfcvm_configuration->nz); }
     float *ptr = NULL;
     FILE *fp = NULL;
     long location = 0;
+
 
     // the z is inverted at line #145
     if ( strcmp(uwpkfcvm_configuration->seek_axis, "fast-y") == 0 ||
