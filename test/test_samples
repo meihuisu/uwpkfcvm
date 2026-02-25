@@ -1,21 +1,55 @@
 #
-#nx = 63
-#ny = 135
-#nz = 21
+#nx = 33
+#ny = 20
+#nz = 15
 #
-#bottom_right_corner_lon = -112.8281
-#bottom_right_corner_lat = 33.4362
-#bottom_left_corner_lon  = -118.1781
-#bottom_left_corner_lat  = 30.2581
-#top_left_corner_lon     = -126.9210
-#top_left_corner_lat     = 39.8816
-#top_right_corner_lon    = -121.4117
-#top_right_corner_lat    = 43.0597
-
-#ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwlinca -l 30.2581,-118.1781,2000
-#ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwlinca -l 33.4362,-112.8281,2000
-#ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwlinca -l 39.8816,-126.9210,4000
-#ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwlinca -l 43.0597,-121.4117,0
+#depth = 28000
+#depth_interval = 2000
 #
-ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwlinca -l 32.31,-115.7709,50000
+# Corners, in LATLON
+#bottom_left_corner_lon = -120.57782
+#bottom_left_corner_lat = 35.13359
+#bottom_right_corner_lon = -119.49177
+#bottom_right_corner_lat = 35.87510
+#top_left_corner_lon = -121.39028
+#top_left_corner_lat = 35.92063
+#top_right_corner_lon = -120.30264
+#top_right_corner_lat = 36.66214
 
+ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwpkfcvm -l 35.13359,-120.57782,0
+ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwpkfcvm -l 35.87510,-119.49177,0
+ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwpkfcvm -l 35.92063,-121.39028,0
+ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwpkfcvm -l 36.66214,-120.30264,0
+ 
+ucvm_query -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m uwpkfcvm -l 35.96000,-120.50500,3000
+
+
+#first one
+#read_properties index: x(0) y(0) z(14) from (33:20:15)
+#vp:35.13359 -120.57782 -64.0 -66.0   0.0 2.60
+#vs:35.13359 -120.57782 -64.0 -66.0   0.0 1.37
+#-120.57782 35.13359 0
+#
+#a point on x axis border
+#read_properties index: x(19) y(0) z(14) from (33:20:15)
+#vp:35.57386 -119.93419  12.0 -66.0   0.0 2.76
+#vs:35.57386 -119.93419  12.0 -66.0   0.0 1.45
+#-119.93419 35.57386 0
+#
+#right in the middle
+#read_properties index: x(16) y(11) z(14) from (33:20:15)
+#vp:35.96000 -120.50500   0.0   0.0   0.0 2.92
+#vs:35.96000 -120.50500   0.0   0.0   0.0 1.38
+#-120.50500 35.96000 0
+##
+#last one on first layer
+#read_properties index: x(32) y(19) z(14) from (33:20:15)
+#vp:36.66214 -120.30264  64.0  48.0   0.0 2.34
+#vs:36.66214 -120.30264  64.0  48.0   0.0 1.23
+#-120.30264 36.66214 0
+#
+#last one on last layer
+#read_properties index: x(32) y(19) z(0) from (33:20:15)
+#vp:36.66214 -120.30264  64.0  48.0  28.0 7.35
+#vs:36.66214 -120.30264  64.0  48.0  28.0 4.19
+#-120.30264 36.66214 28000

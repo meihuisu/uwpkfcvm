@@ -42,16 +42,17 @@ int main(int argc, const char* argv[]) {
 	printf("Loaded the model successfully.\n");
 
 	// Query a point.
-        pt.longitude = -121.5514;
-	pt.latitude = 37.2484;
+        pt.longitude = -120.5050;
+	pt.latitude = 35.960;
 	pt.depth = 0;
 
 
 	uwpkfcvm_query(&pt, &ret, 1);
 
-	assert(ret.vs > 0);
-	assert(ret.vp > 0);
-	assert(ret.rho > 0);
+	// vs/vp/rho are doubles ..
+	assert(ret.vs > 0 && ret.vs == 1380.000000);
+	assert(ret.vp > 0 && ret.vp == 2920.000000);
+	assert(ret.rho > 0 && ret.rho == 2205.8792761710597);
 
 	printf("Query was successful.\n");
 
